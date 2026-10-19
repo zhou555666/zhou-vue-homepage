@@ -6,7 +6,7 @@ import { defineStore } from 'pinia'
 const STORAGE_KEY = 'vueExpProfileData'
 
 const defaultPerson = {
-  avatarUrl: '/头像.png',
+  avatarUrl: `${import.meta.env.BASE_URL}头像.png`,
   name: '周志欢',
   studentId: '249980949',
   education: '本科',
