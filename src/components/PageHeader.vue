@@ -85,6 +85,7 @@ defineEmits(['toggle-theme'])
   background: var(--primary-soft);
   border-radius: 999px;
   padding: 2px 6px;
+  --el-menu-active-color: #fff;
 }
 .page-nav :deep(.el-menu-item) {
   height: 34px;
@@ -101,6 +102,7 @@ defineEmits(['toggle-theme'])
 .page-nav :deep(.el-menu-item.is-active) {
   background: var(--primary);
   color: #fff;
+  border-bottom-color: transparent;
 }
 .theme-btn {
   margin-left: auto;

@@ -27,13 +27,13 @@ const timeline = [
           <el-tag effect="light" round>个人简介</el-tag>
         </div>
       </template>
-      <p class="about-brief">{{ personInfo.brief }}</p>
       <el-descriptions :column="1" border size="small">
         <el-descriptions-item label="姓名">{{ personInfo.name }}</el-descriptions-item>
         <el-descriptions-item label="学号">{{ personInfo.studentId }}</el-descriptions-item>
         <el-descriptions-item label="班级">{{ personInfo.majorClass }}</el-descriptions-item>
         <el-descriptions-item label="学历">{{ personInfo.education }}</el-descriptions-item>
         <el-descriptions-item label="邮箱">{{ personInfo.email }}</el-descriptions-item>
+        <el-descriptions-item label="简介">{{ personInfo.brief }}</el-descriptions-item>
       </el-descriptions>
 
       <div class="skill-block">
