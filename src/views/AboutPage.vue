@@ -93,6 +93,20 @@ const timeline = [
   line-height: 1.7;
 }
 .skill-block { margin-top: 18px; }
+
+/* 个人信息表格：融入粉色整体风格 */
+.about-card :deep(.el-descriptions__label) {
+  background: var(--primary-soft);
+  color: var(--primary-deep);
+  font-weight: 600;
+}
+.about-card :deep(.el-descriptions__content) {
+  background: var(--card);
+  color: var(--text);
+}
+.about-card :deep(.el-descriptions__cell) {
+  border: 1px solid var(--border);
+}
 .about-sub {
   margin: 0 0 10px;
   font-size: 15px;
