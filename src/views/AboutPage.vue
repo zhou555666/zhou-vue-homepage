@@ -6,15 +6,7 @@ import { storeToRefs } from 'pinia'
 import { useProfileStore } from '../stores/profile'
 
 const profileStore = useProfileStore()
-const { personInfo, skillList } = storeToRefs(profileStore)
-
-// 个人成长时间线（数据与项目、班级等真实信息对应）
-const timeline = [
-  { time: '2024-09', title: '进入大学', desc: '就读计算机科学与技术24级2班，开启大学学习生活。' },
-  { time: '2025-11 ~ 2026-01', title: '大学生积分管理系统', desc: '担任后端开发，完成活动发布、积分录入与统计展示等功能。' },
-  { time: '2026-04 ~ 2026-06', title: '互联网专家服务平台', desc: '担任前端开发，搭建专家列表、服务介绍与预约入口等界面。' },
-  { time: '2026-10', title: 'Vue3 个人主页项目', desc: '学习 Vue Router、Pinia 状态管理与 Element Plus 组件库，完成个人主页。' }
-]
+const { personInfo, skillList, timelineList } = storeToRefs(profileStore)
 </script>
 
 <template>
@@ -54,15 +46,16 @@ const timeline = [
       </template>
       <el-timeline>
         <el-timeline-item
-          v-for="(t, i) in timeline"
-          :key="i"
+          v-for="(t, i) in timelineList"
+          :key="t.id"
           :timestamp="t.time"
           placement="top"
-          :type="i === timeline.length - 1 ? 'primary' : ''"
+          :type="i === timelineList.length - 1 ? 'primary' : ''"
         >
           <div class="tl-title">{{ t.title }}</div>
           <div class="tl-desc">{{ t.desc }}</div>
         </el-timeline-item>
+        <el-empty v-if="!timelineList.length" description="暂无成长经历" :image-size="60" />
       </el-timeline>
     </el-card>
   </section>

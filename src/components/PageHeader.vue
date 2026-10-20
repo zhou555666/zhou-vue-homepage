@@ -64,6 +64,7 @@ defineEmits(['toggle-theme'])
   gap: 12px;
   flex-wrap: wrap;
   padding: 10px 16px;
+  position: relative;
 }
 .brand {
   display: flex;
@@ -86,6 +87,10 @@ defineEmits(['toggle-theme'])
   border-radius: 999px;
   padding: 2px 6px;
   --el-menu-active-color: #fff;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 .page-nav :deep(.el-menu-item) {
   height: 34px;
@@ -105,7 +110,6 @@ defineEmits(['toggle-theme'])
   border-bottom-color: transparent;
 }
 .theme-btn {
-  margin-left: auto;
   border: 1.5px solid var(--primary);
   background: transparent;
   color: var(--primary);

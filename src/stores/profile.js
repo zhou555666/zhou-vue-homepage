@@ -5,6 +5,14 @@ import { defineStore } from 'pinia'
 
 const STORAGE_KEY = 'vueExpProfileData'
 
+// 个人成长时间线默认数据
+const defaultTimeline = [
+  { id: 1, time: '2024-09', title: '进入大学', desc: '就读计算机科学与技术24级2班，开启大学学习生活。' },
+  { id: 2, time: '2025-11 ~ 2026-01', title: '大学生积分管理系统', desc: '担任后端开发，完成活动发布、积分录入与统计展示等功能。' },
+  { id: 3, time: '2026-04 ~ 2026-06', title: '互联网专家服务平台', desc: '担任前端开发，搭建专家列表、服务介绍与预约入口等界面。' },
+  { id: 4, time: '2026-10', title: 'Vue3 个人主页项目', desc: '学习 Vue Router、Pinia 状态管理与 Element Plus 组件库，完成个人主页。' }
+]
+
 const defaultPerson = {
   avatarUrl: `${import.meta.env.BASE_URL}头像.png`,
   name: '周志欢',
@@ -26,7 +34,8 @@ function load() {
         personInfo: { ...defaultPerson, ...(data.personInfo || {}) },
         honorList: Array.isArray(data.honorList) && data.honorList.length ? data.honorList : [],
         skillList: Array.isArray(data.skillList) && data.skillList.length ? data.skillList : [],
-        hobbyList: Array.isArray(data.hobbyList) && data.hobbyList.length ? data.hobbyList : []
+        hobbyList: Array.isArray(data.hobbyList) && data.hobbyList.length ? data.hobbyList : [],
+        timelineList: Array.isArray(data.timelineList) ? data.timelineList : defaultTimeline
       }
     }
   } catch (e) {
@@ -35,6 +44,7 @@ function load() {
   return {
     personInfo: { ...defaultPerson },
     honorList: [],
+    timelineList: defaultTimeline,
     skillList: [
       { id: 1, name: 'Vue3' },
       { id: 2, name: 'HTML' },
@@ -66,7 +76,8 @@ export const useProfileStore = defineStore('profile', {
           personInfo: this.personInfo,
           honorList: this.honorList,
           skillList: this.skillList,
-          hobbyList: this.hobbyList
+          hobbyList: this.hobbyList,
+          timelineList: this.timelineList
         }))
       } catch (e) { console.warn('保存资料数据失败：', e) }
     },
@@ -84,6 +95,8 @@ export const useProfileStore = defineStore('profile', {
       this.hobbyList.push({ id: newId, name })
       this.persist()
     },
-    delHobby(id) { this.hobbyList = this.hobbyList.filter(h => h.id !== id); this.persist() }
+    delHobby(id) { this.hobbyList = this.hobbyList.filter(h => h.id !== id); this.persist() },
+    addTimeline(item) { this.timelineList.push(item); this.persist() },
+    delTimeline(id) { this.timelineList = this.timelineList.filter(t => t.id !== id); this.persist() }
   }
 })

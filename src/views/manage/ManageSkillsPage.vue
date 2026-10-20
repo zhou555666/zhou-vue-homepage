@@ -8,8 +8,8 @@ import { ElMessage } from 'element-plus'
 import { useProfileStore } from '../../stores/profile'
 
 const profileStore = useProfileStore()
-const { skillList, hobbyList, honorList } = storeToRefs(profileStore)
-const { addSkill: addSkillAction, delSkill, addHobby: addHobbyAction, delHobby, addHonor: addHonorAction, delHonor } = profileStore
+const { skillList, hobbyList, honorList, timelineList } = storeToRefs(profileStore)
+const { addSkill: addSkillAction, delSkill, addHobby: addHobbyAction, delHobby, addHonor: addHonorAction, delHonor, addTimeline: addTimelineAction, delTimeline } = profileStore
 
 const newSkill = ref('')
 const newHobby = ref('')
@@ -17,6 +17,8 @@ const newHonor = ref({ title: '', level: '', time: '', desc: '' })
 // 荣誉级别：下拉选择，选"其他"时使用自定义输入
 const honorLevelChoice = ref('')
 const honorLevelCustom = ref('')
+// 成长时间线
+const newTimeline = ref({ time: '', title: '', desc: '' })
 
 function addSkill() {
   const name = newSkill.value.trim()
@@ -55,6 +57,20 @@ function addHonor() {
   honorLevelChoice.value = ''
   honorLevelCustom.value = ''
   ElMessage.success('荣誉已添加')
+}
+
+function addTimeline() {
+  const title = newTimeline.value.title.trim()
+  if (!title) return ElMessage.warning('请输入经历标题')
+  const newId = timelineList.value.length ? Math.max(...timelineList.value.map(t => t.id)) + 1 : 1
+  addTimelineAction({
+    id: newId,
+    time: newTimeline.value.time.trim(),
+    title,
+    desc: newTimeline.value.desc.trim()
+  })
+  newTimeline.value = { time: '', title: '', desc: '' }
+  ElMessage.success('成长经历已添加')
 }
 </script>
 
@@ -147,6 +163,30 @@ function addHonor() {
           <p class="honor-desc" v-if="h.desc">{{ h.desc }}</p>
         </div>
         <el-empty v-if="!honorList.length" description="暂无荣誉，可在上方添加。" :image-size="60" />
+      </div>
+    </el-card>
+
+    <!-- 成长时间线管理 -->
+    <el-card shadow="hover" class="form-card">
+      <template #header><span class="form-title">个人成长时间线管理</span></template>
+
+      <div class="honor-form">
+        <el-input v-model="newTimeline.title" placeholder="经历标题（必填），如：进入大学" />
+        <el-input v-model="newTimeline.time" placeholder="时间，如：2024-09 或 2025-11 ~ 2026-01" />
+        <el-input v-model="newTimeline.desc" type="textarea" :rows="2" placeholder="经历说明（选填）" />
+        <el-button type="primary" class="add-honor-btn" @click="addTimeline">+ 添加经历</el-button>
+      </div>
+
+      <div class="honor-list">
+        <div class="honor-item" v-for="t in timelineList" :key="t.id">
+          <div class="honor-main">
+            <span class="honor-time">{{ t.time }}</span>
+            <span class="honor-title">{{ t.title }}</span>
+            <el-button type="danger" link @click="delTimeline(t.id)">删除</el-button>
+          </div>
+          <p class="honor-desc" v-if="t.desc">{{ t.desc }}</p>
+        </div>
+        <el-empty v-if="!timelineList.length" description="暂无成长经历，可在上方添加。" :image-size="60" />
       </div>
     </el-card>
   </section>
