@@ -9,6 +9,7 @@
       <RouterLink :to="{ name: 'manage-profile' }" class="tab-link">个人简介</RouterLink>
       <RouterLink :to="{ name: 'manage-projects' }" class="tab-link">项目信息</RouterLink>
       <RouterLink :to="{ name: 'manage-skills' }" class="tab-link">技能爱好</RouterLink>
+      <RouterLink :to="{ name: 'manage-timeline' }" class="tab-link">成长经历</RouterLink>
       <RouterLink :to="{ name: 'manage-articles' }" class="tab-link">文章管理</RouterLink>
     </nav>
 

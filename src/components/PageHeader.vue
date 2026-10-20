@@ -64,7 +64,6 @@ defineEmits(['toggle-theme'])
   gap: 12px;
   flex-wrap: wrap;
   padding: 10px 16px;
-  position: relative;
 }
 .brand {
   display: flex;
@@ -87,18 +86,16 @@ defineEmits(['toggle-theme'])
   border-radius: 999px;
   padding: 2px 6px;
   --el-menu-active-color: #fff;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
 }
 .page-nav :deep(.el-menu-item) {
   height: 34px;
   line-height: 34px;
   margin: 3px 2px;
+  padding: 0 18px;
   border-radius: 999px;
   color: var(--text-light);
   font-size: 13px;
+  justify-content: center;
 }
 .page-nav :deep(.el-menu-item:hover) {
   background: var(--card);

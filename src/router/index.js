@@ -11,6 +11,7 @@ import ManagePage from '../views/manage/ManagePage.vue'
 import ManageProfilePage from '../views/manage/ManageProfilePage.vue'
 import ManageProjectsPage from '../views/manage/ManageProjectsPage.vue'
 import ManageSkillsPage from '../views/manage/ManageSkillsPage.vue'
+import ManageTimelinePage from '../views/manage/ManageTimelinePage.vue'
 import ArticleListPage from '../views/articles/ArticleListPage.vue'
 import ArticleManagePage from '../views/articles/ArticleManagePage.vue'
 import NotFoundPage from '../views/NotFoundPage.vue'
@@ -101,6 +102,12 @@ const routes = [
         name: 'manage-skills',
         component: ManageSkillsPage,
         meta: { title: '技能爱好管理', requiresOwner: true }
+      },
+      {
+        path: 'timeline',
+        name: 'manage-timeline',
+        component: ManageTimelinePage,
+        meta: { title: '成长经历管理', requiresOwner: true }
       },
       {
         path: 'articles',
