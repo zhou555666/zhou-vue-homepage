@@ -84,18 +84,17 @@ defineEmits(['toggle-theme'])
   border-bottom: none !important;
   background: var(--primary-soft);
   border-radius: 999px;
-  padding: 2px 6px;
+  padding: 2px;
   --el-menu-active-color: #fff;
   display: inline-flex !important;
   width: max-content !important;
   flex: 0 0 auto !important;
-  margin: 0 auto;
 }
 .page-nav.el-menu--horizontal > :deep(.el-menu-item) {
   height: 32px;
   line-height: 32px;
-  margin: 3px 2px;
-  padding: 0 14px;
+  margin: 3px 1px;
+  padding: 0 12px;
   border-radius: 999px;
   color: var(--text-light);
   font-size: 13px;
