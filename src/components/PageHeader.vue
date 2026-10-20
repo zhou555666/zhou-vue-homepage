@@ -88,7 +88,9 @@ defineEmits(['toggle-theme'])
   --el-menu-active-color: #fff;
   display: inline-flex !important;
   width: max-content !important;
+  height: auto !important;
   flex: 0 0 auto !important;
+  align-items: center;
 }
 .page-nav.el-menu--horizontal :deep(.el-menu-item) {
   height: 32px !important;
