@@ -86,12 +86,15 @@ defineEmits(['toggle-theme'])
   border-radius: 999px;
   padding: 2px 6px;
   --el-menu-active-color: #fff;
+  width: fit-content;
+  flex-shrink: 0;
 }
+.page-nav :deep(.el-menu) { width: fit-content; border-bottom: none; }
 .page-nav :deep(.el-menu-item) {
   height: 34px;
   line-height: 34px;
-  margin: 3px 2px;
-  padding: 0 18px;
+  margin: 3px 3px;
+  padding: 0 16px;
   border-radius: 999px;
   color: var(--text-light);
   font-size: 13px;
