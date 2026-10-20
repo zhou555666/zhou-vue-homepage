@@ -94,12 +94,15 @@ defineEmits(['toggle-theme'])
   height: 32px;
   line-height: 32px;
   margin: 3px 1px;
-  padding: 0 12px;
+  padding: 0 14px;
   border-radius: 999px;
   color: var(--text-light);
   font-size: 13px;
   flex: 0 0 auto !important;
   width: auto !important;
+}
+.page-nav.el-menu--horizontal > :deep(.el-menu-item:last-child) {
+  margin-right: 1px;
 }
 .page-nav :deep(.el-menu-item:hover) {
   background: var(--card);
