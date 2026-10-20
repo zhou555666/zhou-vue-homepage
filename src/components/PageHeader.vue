@@ -80,26 +80,27 @@ defineEmits(['toggle-theme'])
   white-space: nowrap;
   letter-spacing: 1px;
 }
-.page-nav {
+.page-nav.el-menu {
   border-bottom: none !important;
   background: var(--primary-soft);
   border-radius: 999px;
   padding: 2px 6px;
   --el-menu-active-color: #fff;
   display: inline-flex !important;
-  width: auto !important;
+  width: max-content !important;
   flex: 0 0 auto !important;
-  justify-content: flex-start;
+  margin: 0 auto;
 }
-.page-nav :deep(.el-menu-item) {
-  height: 34px;
-  line-height: 34px;
-  margin: 3px 3px;
-  padding: 0 16px;
+.page-nav.el-menu--horizontal > :deep(.el-menu-item) {
+  height: 32px;
+  line-height: 32px;
+  margin: 3px 2px;
+  padding: 0 14px;
   border-radius: 999px;
   color: var(--text-light);
   font-size: 13px;
-  flex: 0 0 auto;
+  flex: 0 0 auto !important;
+  width: auto !important;
 }
 .page-nav :deep(.el-menu-item:hover) {
   background: var(--card);
