@@ -81,15 +81,16 @@ defineEmits(['toggle-theme'])
   letter-spacing: 1px;
 }
 .page-nav {
-  border-bottom: none;
+  border-bottom: none !important;
   background: var(--primary-soft);
   border-radius: 999px;
   padding: 2px 6px;
   --el-menu-active-color: #fff;
-  width: fit-content;
-  flex-shrink: 0;
+  display: inline-flex !important;
+  width: auto !important;
+  flex: 0 0 auto !important;
+  justify-content: flex-start;
 }
-.page-nav :deep(.el-menu) { width: fit-content; border-bottom: none; }
 .page-nav :deep(.el-menu-item) {
   height: 34px;
   line-height: 34px;
@@ -98,7 +99,7 @@ defineEmits(['toggle-theme'])
   border-radius: 999px;
   color: var(--text-light);
   font-size: 13px;
-  justify-content: center;
+  flex: 0 0 auto;
 }
 .page-nav :deep(.el-menu-item:hover) {
   background: var(--card);
