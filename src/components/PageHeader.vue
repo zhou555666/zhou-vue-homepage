@@ -111,6 +111,7 @@ defineEmits(['toggle-theme'])
   border-bottom-color: transparent;
 }
 .theme-btn {
+  margin-left: auto;
   border: 1.5px solid var(--primary);
   background: transparent;
   color: var(--primary);
