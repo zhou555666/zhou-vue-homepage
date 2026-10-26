@@ -1,0 +1,8 @@
+{
+  "name": "个人主页后端接口文档",
+  "version": "1.0.0",
+  "description": "实验五：个人主页项目与文章 RESTful 接口文档（apidoc 自动生成）",
+  "title": "个人主页接口文档",
+  "url": "http://localhost:3000",
+  "order": ["Project", "Article"]
+}

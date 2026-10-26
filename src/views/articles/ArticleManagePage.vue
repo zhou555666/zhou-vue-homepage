@@ -7,6 +7,7 @@ import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useArticleStore } from '../../stores/article'
+import { exportCSV } from '../../utils/export'
 
 const articleStore = useArticleStore()
 const { list } = storeToRefs(articleStore)
@@ -59,13 +60,26 @@ function remove(row) {
     ElMessage.success('已删除')
   }).catch(() => {})
 }
+
+// 导出文章数据为 CSV 文件（拓展要求：数据导出，Excel 可直接打开）
+function exportData() {
+  if (!list.value.length) {
+    ElMessage.warning('当前没有可导出的文章数据')
+    return
+  }
+  exportCSV(list.value, 'articles.csv')
+  ElMessage.success('已导出文章数据到 articles.csv')
+}
 </script>
 
 <template>
   <section class="manage-page">
     <div class="toolbar">
       <h3 class="form-title">文章管理（共 {{ list.length }} 篇）</h3>
-      <el-button type="primary" round @click="startAdd">新增文章</el-button>
+      <div>
+        <el-button type="success" plain round @click="exportData">导出文章数据</el-button>
+        <el-button type="primary" round @click="startAdd">新增文章</el-button>
+      </div>
     </div>
 
     <!-- 文章列表：el-table -->

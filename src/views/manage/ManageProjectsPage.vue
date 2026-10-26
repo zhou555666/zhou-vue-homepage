@@ -1,30 +1,38 @@
 <script setup>
 // src/views/manage/ManageProjectsPage.vue
-// 第二次实验：使用 el-card / el-input / el-tag / el-date-picker / el-button / el-message 重构。
-// 保留"本地草稿 + 点保存才写回"的核心逻辑：不点保存不会影响公开页，也不会写入 localStorage；
-// 点"取消"则丢弃草稿恢复为已保存内容。
-import { ref } from 'vue'
+// 实验五改造：项目信息管理页。仍采用"本地草稿 + 点保存才写回"逻辑，
+// 但保存时不再写 localStorage，而是通过 Store 的 syncAll 对比草稿与数据库，
+// 按差异调用新增/修改/删除 RESTful 接口写入 MySQL。
+import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus'
 import { useProjectStore } from '../../stores/project'
+import { exportJSON } from '../../utils/export'
 
 const projectStore = useProjectStore()
 const { list: workList } = storeToRefs(projectStore)
-const { replaceAll, statusOf } = projectStore
+const { syncAll, statusOf } = projectStore
 
 // 本地草稿副本：深拷贝，编辑只改草稿
-const draft = ref(JSON.parse(JSON.stringify(workList.value)))
+const draft = ref([])
 
+// 进入页面时先从接口加载，再以数据库内容初始化草稿
+onMounted(async () => {
+  await projectStore.ensureLoaded()
+  draft.value = JSON.parse(JSON.stringify(workList.value))
+})
+
+// 新增：临时 id 置空并加 __new / __key 标记，保存时才写入数据库
 function addProject() {
-  const newId = draft.value.length ? Math.max(...draft.value.map(p => p.id)) + 1 : 1
   draft.value.push({
-    id: newId, title: '', role: '', status: '规划中', startTime: '',
+    id: null, __new: true, __key: 'new-' + Date.now() + '-' + draft.value.length,
+    title: '', role: '', status: '规划中', startTime: '',
     endTime: '', desc: '', isStar: false, techs: [], detail: '', stages: []
   })
 }
 
-function delProject(id) {
-  draft.value = draft.value.filter(p => p.id !== id)
+function delProject(p) {
+  draft.value = draft.value.filter(x => x !== p)
 }
 
 function addStage(p) {
@@ -38,19 +46,34 @@ function statusType(s) {
   return 'warning'
 }
 
-function save() {
+async function save() {
   const emptyTitles = draft.value.filter(p => !p.title.trim())
   if (emptyTitles.length) {
     ElMessage.warning('有项目标题为空，请填写完整后再保存')
     return
   }
-  replaceAll(JSON.parse(JSON.stringify(draft.value)))
-  ElMessage.success('已保存')
+  try {
+    await syncAll(JSON.parse(JSON.stringify(draft.value)))
+    draft.value = JSON.parse(JSON.stringify(workList.value))
+    ElMessage.success('已保存到数据库')
+  } catch (e) {
+    ElMessage.error('保存失败：' + e.message)
+  }
 }
 
 function cancel() {
   draft.value = JSON.parse(JSON.stringify(workList.value))
   ElMessage.info('已取消修改，恢复为已保存的内容')
+}
+
+// 导出项目数据为 JSON 文件（拓展要求：数据导出）
+function exportData() {
+  if (!workList.value.length) {
+    ElMessage.warning('当前没有可导出的项目数据')
+    return
+  }
+  exportJSON(workList.value, 'projects.json')
+  ElMessage.success('已导出项目数据到 projects.json')
 }
 </script>
 
@@ -61,12 +84,12 @@ function cancel() {
         <span class="form-title">编辑项目信息</span>
       </template>
 
-      <div class="proj-item" v-for="p in draft" :key="p.id">
+      <div class="proj-item" v-for="p in draft" :key="p.__key || p.id">
         <div class="proj-head">
           <el-input v-model="p.title" placeholder="项目标题（必填）" class="proj-title-input" />
           <!-- 状态由时间段自动推导，不手动选择 -->
           <el-tag :type="statusType(statusOf(p))" effect="light" round>{{ statusOf(p) }}</el-tag>
-          <el-button type="danger" link @click="delProject(p.id)">删除</el-button>
+          <el-button type="danger" link @click="delProject(p)">删除</el-button>
         </div>
 
         <el-form label-position="top">
@@ -119,6 +142,7 @@ function cancel() {
         <el-button @click="addProject">+ 新增项目</el-button>
         <el-button type="primary" @click="save">保存</el-button>
         <el-button @click="cancel">取消修改</el-button>
+        <el-button type="success" plain @click="exportData">导出项目数据</el-button>
       </div>
     </el-card>
   </section>

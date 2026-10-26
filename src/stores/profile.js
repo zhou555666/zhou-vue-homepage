@@ -25,6 +25,13 @@ const defaultPerson = {
   email: 'zhouzhihuan@example.com'
 }
 
+// 默认荣誉数据：当 localStorage 中没有保存过资料数据时使用，
+// 保证荣誉在本地与部署环境下都能正常显示。
+const defaultHonors = [
+  { id: 1, title: '校级三等奖学金', level: '校级', time: '2024-11', desc: '2024—2025 学年校级三等奖学金，学业成绩优良。' },
+  { id: 2, title: '校级三等奖学金', level: '校级', time: '2025-11', desc: '2025—2026 学年校级三等奖学金，学业成绩保持优良。' }
+]
+
 function load() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -43,7 +50,7 @@ function load() {
   }
   return {
     personInfo: { ...defaultPerson },
-    honorList: [],
+    honorList: defaultHonors,
     timelineList: defaultTimeline,
     skillList: [
       { id: 1, name: 'Vue3' },

@@ -1,57 +1,21 @@
 // src/stores/project.js
-// 项目 Store：集中管理项目经历数据，提供 getters（统计、按 id 查找）与增删改查 actions，
-// 并在 actions 中同步 localStorage 实现持久化。
+// 项目 Store（实验五改造）：数据由后端 /api/projects RESTful 接口提供，
+// 不再依赖 localStorage。state 保存项目列表，getters 做统计与状态推导，
+// actions 通过 Axios 调用接口完成加载与增删改。
 import { defineStore } from 'pinia'
+import { getProjects, addProject, updateProject, deleteProject } from '../api/project'
 
-const STORAGE_KEY = 'vueExpProjectData'
-
-const defaultList = [
-  {
-    id: 1,
-    title: '大学生积分管理系统',
-    role: '后端开发',
-    status: '已完成',
-    startTime: '2025-11',
-    endTime: '2026-01',
-    desc: '面向大学生社团活动的积分记录与排行系统，实现活动发布、积分录入与统计展示。',
-    isStar: true,
-    techs: ['Vue3', 'JavaScript', 'HTML', 'CSS'],
-    detail: '负责积分记录模块的接口对接与页面展示，实现了按活动、按成员的积分汇总。',
-    stages: [{ name: '第一阶段', start: '2025-11', duration: '2个月' }]
-  },
-  {
-    id: 2,
-    title: '互联网专家服务平台',
-    role: '前端开发',
-    status: '开发中',
-    startTime: '2026-04',
-    endTime: '2026-06',
-    desc: '面向专家的在线咨询服务门户，包含专家列表、服务介绍与预约入口。',
-    isStar: false,
-    techs: ['JavaScript', 'CSS'],
-    detail: '负责专家展示页与预约流程的前端实现。',
-    stages: []
-  }
-]
-
-function load() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) {
-      const data = JSON.parse(raw)
-      if (Array.isArray(data) && data.length) {
-        return data.map(p => ({ status: '开发中', isStar: false, techs: [], detail: '', stages: [], ...p }))
-      }
-    }
-  } catch (e) {
-    console.warn('读取项目数据失败：', e)
-  }
-  return defaultList.map(p => ({ ...p }))
+// 从草稿对象中剔除前端标记字段，生成提交给后端的 payload
+function toPayload(item) {
+  const { __new, __key, id, ...rest } = item
+  return rest
 }
 
 export const useProjectStore = defineStore('project', {
   state: () => ({
-    list: load()
+    list: [],        // 从接口加载的项目列表
+    loaded: false,   // 是否已从接口加载过
+    error: ''        // 加载失败时的提示
   }),
   getters: {
     // 项目总数
@@ -77,45 +41,63 @@ export const useProjectStore = defineStore('project', {
     findById: (state) => (id) => state.list.find(p => p.id === Number(id))
   },
   actions: {
-    // 持久化
-    persist() {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.list)) } catch (e) { console.warn('保存项目数据失败：', e) }
+    // 从接口加载项目列表
+    async fetchAll() {
+      try {
+        this.list = await getProjects()
+        this.loaded = true
+        this.error = ''
+      } catch (e) {
+        console.warn('加载项目失败：', e.message)
+        this.error = e.message
+      }
     },
-    // 整体写回（后台"保存"时用草稿替换整个列表并持久化）
-    replaceAll(list) {
-      this.list = list
-      this.persist()
+    // 若尚未加载则加载一次（供各页面挂载时调用）
+    async ensureLoaded() {
+      if (!this.loaded) await this.fetchAll()
     },
-    // 新增项目（id 由 Store 自动生成，忽略传入的 id）
-    addProject(project = {}) {
-      const { id: _ignored, ...rest } = project
-      const newId = this.list.length ? Math.max(...this.list.map(p => p.id)) + 1 : 1
-      this.list.push({
-        id: newId, title: '', role: '', status: '规划中', startTime: '',
-        endTime: '', desc: '', isStar: false, techs: [], detail: '', stages: [],
-        ...rest
-      })
-      this.persist()
+    // 新增项目（id 由后端自增生成）
+    async addProject(project = {}) {
+      await addProject(toPayload(project))
+      await this.fetchAll()
     },
     // 删除项目
-    delProject(id) {
+    async delProject(id) {
+      await deleteProject(id)
       this.list = this.list.filter(p => p.id !== id)
-      this.persist()
     },
     // 更新项目
-    updateProject(updated) {
-      this.list = this.list.map(p => p.id === updated.id ? updated : p)
-      this.persist()
-    },
-    // 添加项目进程阶段
-    addStage(project) {
-      project.stages.push({ name: '第' + (project.stages.length + 1) + '阶段', start: '', duration: '' })
-      this.persist()
+    async updateProject(updated) {
+      await updateProject(updated.id, toPayload(updated))
+      await this.fetchAll()
     },
     // 设置 / 取消代表作
-    setStar(id) {
-      this.list = this.list.map(p => ({ ...p, isStar: id !== null && p.id === id }))
-      this.persist()
+    async setStar(id) {
+      for (const p of this.list) {
+        const shouldStar = id !== null && p.id === id
+        if (p.isStar !== shouldStar) {
+          await updateProject(p.id, toPayload({ ...p, isStar: shouldStar }))
+        }
+      }
+      await this.fetchAll()
+    },
+    // 后台"保存"：对比草稿与当前列表，按差异调用新增/修改/删除接口，最后刷新
+    async syncAll(draft) {
+      for (const item of draft) {
+        const isNew = item.__new === true || !item.id
+        if (isNew) {
+          await addProject(toPayload(item))
+        } else {
+          await updateProject(item.id, toPayload(item))
+        }
+      }
+      // 数据库中有、但草稿中已删掉的项目 → 调用删除接口
+      for (const p of this.list) {
+        if (!draft.some(d => d.id === p.id)) {
+          await deleteProject(p.id)
+        }
+      }
+      await this.fetchAll()
     }
   }
 })

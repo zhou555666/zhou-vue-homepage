@@ -1,0 +1,21 @@
+{
+  "name": "vue1-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "实验五：个人主页后端服务器（Express + mysql2）",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js",
+    "doc": "apidoc -i routes -o docs"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "mysql2": "^3.11.5"
+  },
+  "devDependencies": {
+    "apidoc": "^1.2.0"
+  }
+}

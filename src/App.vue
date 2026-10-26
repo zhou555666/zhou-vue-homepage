@@ -5,6 +5,8 @@
 import { ref, onMounted } from 'vue'
 import PageHeader from './components/PageHeader.vue'
 import PageFooter from './components/PageFooter.vue'
+import { useProjectStore } from './stores/project'
+import { useArticleStore } from './stores/article'
 
 const isDarkTheme = ref(false)
 const onToggleTheme = () => {
@@ -13,6 +15,9 @@ const onToggleTheme = () => {
 }
 onMounted(() => {
   document.body.classList.toggle('dark', isDarkTheme.value)
+  // 实验五：应用挂载时统一从后端接口加载项目与文章数据（跨页面共享同一份数据）
+  useProjectStore().ensureLoaded()
+  useArticleStore().ensureLoaded()
 })
 </script>
 
